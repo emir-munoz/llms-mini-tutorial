@@ -4,36 +4,36 @@ This tutorial shows how to use [Ollama](https://ollama.com/) and [Langflow](http
 
 ## Pre-requirements
 
-- **Docker**: we will use Docker to serve LLMs. See https://www.docker.com/
-- **Python**: we will use Python to build applications that use LLMs. See https://conda.io/projects/conda/en/latest/index.html or other virtual environment manager.
+- **Docker**: we will use Docker to run Ollama and serve LLMs. See https://www.docker.com/ for installation steps.
+- **Python**: we will use Python 3.10 or later to build applications that use LLMs. You can use https://conda.io/projects/conda/en/latest/index.html or other virtual environment manager.
 
 ## Setup
 
-For this tutorial, we will be using a Docker image for Ollama to serve a model from the Qwen2 series of LLMs released by Alibaba. Ollama provides a series of models out-of-the-box in their website, e.g., https://ollama.com/library/qwen2.
+For this tutorial, we will be using a Docker image for Ollama to serve a model from the [Qwen2 series](https://huggingface.co/collections/Qwen/qwen2-6659360b33528ced941e557f) of LLMs released by Alibaba. Ollama provides a series of models out-of-the-box in their website, e.g., https://ollama.com/library/qwen2.
 
-LLMs are a hot topic and there are many other tools available to reach similar outcomes.
+LLMs are a hot topic and there are many other tools and models available to reach a similar outcome.
 
 ### Ollama
 
-To configure Ollama, you can download the app and install it in your local machine from https://ollama.com/download. But in this tutorial, we will be using a Docker image, see https://ollama.com/blog/ollama-is-now-available-as-an-official-docker-image.
+To run Ollama, you can download the app and install it in your local machine from https://ollama.com/download. But in this tutorial, we will be using a Docker image, see https://ollama.com/blog/ollama-is-now-available-as-an-official-docker-image.
 
-Note: you can skip the steps related to Docker if you decided to do the full installation of Ollama in your machine.
+*Note: you can skip the steps related to Docker if you decided to do the full installation of Ollama in your machine.*
 
 We start by pulling the Ollama Docker image. We assume you have Docker installed in your local machine.
 
-```properties
+```bash
 docker pull ollama/ollama
 ```
 
-Now we can create and run a container for Ollama:
+Now we can create and run a container for Ollama using port 11434:
 
-```properties
+```bash
 docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
 ```
 
 Now that the Docker container is running, we can run an LLM in it --- at least a small one :) In this tutorial, we will be playing with `Qwen/Qwen2-0.5B-Instruct`, which is a small but powerful model with 494M parameters and multilingual capabilities (see [Hugging Face documentation](https://huggingface.co/Qwen/Qwen2-0.5B-Instruct).)
 
-```properties
+```bash
 docker exec -it ollama ollama run qwen2:0.5b
 ```
 
@@ -55,7 +55,7 @@ The running model will also be available via API at http://localhost:11434/api/g
 
 (If you chose a different port in the previous step, then that should be updated here.)
 
-```properties
+```bash
 curl http://localhost:11434/api/generate -d '{
   "model": "qwen2:0.5b",
   "prompt":"Why is the sky blue?"
@@ -73,7 +73,7 @@ curl http://localhost:11434/api/generate -d '{
 ...
 ```
 
-```properties
+```bash
 curl http://localhost:11434/api/chat -d '{
   "model": "qwen2:0.5b",
   "messages": [
@@ -86,21 +86,27 @@ curl http://localhost:11434/api/chat -d '{
 ...
 ```
 
-At this point, you have access to an LLM in your local machine that can be used to build applications! 🚀
+At this point, you have access to an LLM in your local machine that can be used to build applications! :rocket:
+
+To stop the container at any moment, type the following:
+
+```bash
+docker stop ollama
+```
 
 ### Langflow
 
-Given the LLM availability through an API, there are different ways to build applications. Here we will use Langflow, which is a low code tool to design LLM pipelines.
+Given the LLM availability through an API, there are different ways to build applications. Here we will use Langflow, which is a visual framework to design LLM pipelines.
 
 This is a Python package that you can install using:
 
-```properties
+```bash
 python -m pip install langflow -U
 ```
 
 Then, you can run Langflow with:
 
-```properties
+```bash
 python -m langflow run
 
 ╭───────────────────────────────────────────────────╮
@@ -113,9 +119,13 @@ python -m langflow run
 
 You can see that Langflow has created a URL to access their UI from your browser. Go ahead and open this URL and click on the "New Project" button to create a new flow.
 
-The UI allows drag-and-drop of predefined blocks to a canvas. To declare a minimalist bot you need just two blocks as follows:
+The UI allows drag-and-drop of predefined blocks to a canvas. There many example flows available in their store and in their Hugging Face Space, https://huggingface.co/spaces/Langflow/Langflow.
+
+To build our minimalist bot, we need just two blocks:
 
 ![Langflow](./langflow.png)
+
+To recreate this you can follow these steps:
 
 1. From the left menu, select "Chains" and "ConversationChain". Drag that to the canvas.
 2. From the left menu, select "LLMs" and "ChatOllama". Drag that to the canvas.
@@ -126,6 +136,6 @@ The UI allows drag-and-drop of predefined blocks to a canvas. To declare a minim
 
 ![Bot](./bot.png)
 
-:tada: Congrats! you have created an LLM powered bot.
+:tada: Congrats! you have created an LLM powered chatbot.
 
 Feel free to explore and test other blocks available in Langflow to build more complex applications.
